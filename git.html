@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git | Hello Cloud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="index.html">Hello Cloud</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="linux.html">Linux</a></li>
+      <li><a href="networking.html">Networking</a></li>
+      <li><a href="cloud.html">Cloud</a></li>
+      <li><a href="git.html">Git</a></li>
+      <li><a href="devops.html">DevOps</a></li>
+      <li><a href="commands.html">Commands</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-hero">
+    <div class="inner">
+      <p class="eyebrow">Unit 5</p>
+      <h1>Git and GitHub</h1>
+      <p class="lead">Git records the history of your files, so you can experiment and undo mistakes safely. GitHub hosts that history online and adds collaboration tools such as pull requests and GitHub Pages.</p>
+      <div class="toc">
+        <a href="#basics">Core idea</a>
+        <a href="#areas">Three areas</a>
+        <a href="#setup">Setup</a>
+        <a href="#daily">Daily workflow</a>
+        <a href="#messages">Commit messages</a>
+        <a href="#branches">Branches</a>
+        <a href="#merge">Merge vs rebase</a>
+        <a href="#conflicts">Conflicts</a>
+        <a href="#undo">Undoing</a>
+        <a href="#remotes">Remotes and GitHub</a>
+        <a href="#ignore">.gitignore</a>
+        <a href="#secrets">Secrets</a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <h2 id="basics">1. The core idea</h2>
+    <p>A Git repository is a folder with a hidden <code>.git</code> directory. That directory stores every version of every tracked file as a <strong>commit</strong>. A commit is a snapshot of the project, with an author, a time, a message, and a link to the previous commit. Each commit is identified by a long hash, and Git shows its first seven characters, such as <code>78562cc</code>.</p>
+    <p>Git is <strong>distributed</strong>. Your computer holds the full history, so you can read logs and make commits without internet access. GitHub is simply another copy that you share with others.</p>
+
+    <h2 id="areas">2. The three areas of Git</h2>
+    <p>Git moves changes through three areas. Most beginner confusion comes from forgetting which area a change is in.</p>
+    <pre><code>Working directory  --git add-->  Staging area  --git commit-->  Repository  --git push-->  GitHub
+  (files you edit)            (chosen changes)          (history)                    (remote copy)</code></pre>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Area</th><th>What it holds</th><th>See it with</th></tr>
+        <tr><td>Working directory</td><td>The files you are editing</td><td><code>git status</code>, <code>git diff</code></td></tr>
+        <tr><td>Staging area (index)</td><td>Changes selected for the next commit</td><td><code>git diff --staged</code></td></tr>
+        <tr><td>Repository (<code>.git</code>)</td><td>Every commit, branch, and tag</td><td><code>git log --oneline</code></td></tr>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="label">Why staging exists</span>
+      <p>Staging lets you group related changes into clean commits. You can edit three files, but commit only the one that fixes a bug, then commit the rest separately.</p>
+    </div>
+
+    <h2 id="setup">3. Setup and creating a repository</h2>
+    <pre><code>git --version                                    # check Git is installed
+git config --global user.name "Your Name"        # author name on every commit
+git config --global user.email "you@example.com" # author email
+git config --global init.defaultBranch main      # new repos start on main
+git config --list                                # show all settings
+
+git init -b main                                 # start a repository in this folder
+git clone https://github.com/USER/REPO.git       # copy an existing repository</code></pre>
+
+    <h2 id="daily">4. Daily workflow</h2>
+    <pre><code>git status                        # what changed, and what is staged?
+git diff                          # show the exact unstaged changes
+git add index.html                # stage one file
+git add .                         # stage every change in this folder
+git commit -m "Add contact line"  # save a snapshot
+git log --oneline                 # short history
+git push                          # send commits to GitHub</code></pre>
+    <div class="callout warn">
+      <span class="label">Check before you commit</span>
+      <p>Run <code>git status</code> and read the file list. <code>git add .</code> stages everything, including files you did not mean to share, so check first.</p>
+    </div>
+
+    <h2 id="messages">5. Writing good commit messages</h2>
+    <p>Write the subject in the imperative mood, as if giving an instruction ("Add", "Fix", "Update"), and keep it under about 50 characters. Add a body after a blank line when the reason is not obvious.</p>
+    <div class="grid-2">
+      <div class="card">
+        <span class="badge">Good</span>
+        <p><code>Add networking cheat sheet</code></p>
+        <p><code>Fix contact link on about page</code></p>
+      </div>
+      <div class="card">
+        <span class="badge peach">Weak</span>
+        <p><code>stuff</code></p>
+        <p><code>Updated some files and fixed things</code></p>
+      </div>
+    </div>
+
+    <h2 id="branches">6. Branches</h2>
+    <p>A branch is a movable pointer to a commit. Create a branch to work on a feature without changing <code>main</code>. Prefixes such as <code>feature/</code> and <code>fix/</code> keep the history easy to read.</p>
+    <pre><code>git branch                         # list local branches
+git switch -c feature/about-page   # create a branch and switch to it
+git switch main                    # switch back
+git branch -d feature/about-page   # delete it after merging</code></pre>
+    <pre><code>        A---B              (main)
+       /
+  ----                    
+       \
+        C---D            (feature/about-page)</code></pre>
+    <p>Here <code>main</code> and the feature branch split after commit A. Each has its own commits until one of them is merged into the other.</p>
+
+    <h2 id="merge">7. Merge vs rebase</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Merge</h3>
+        <p>Joins two branches. If both have new commits, Git creates a merge commit. The history shows exactly what happened. Safe for shared branches.</p>
+        <pre><code>git switch main
+git merge feature/about-page</code></pre>
+      </div>
+      <div class="card">
+        <h3>Rebase</h3>
+        <p>Replays your commits on top of another branch, giving a straight line of history. It rewrites commits, so don't rebase branches other people are using.</p>
+        <pre><code>git switch feature/about-page
+git rebase main</code></pre>
+      </div>
+    </div>
+    <p>In this project, the About page was merged with <code>--no-ff</code>, which always creates a merge commit so the branch stays visible in the graph.</p>
+    <div class="callout warn">
+      <span class="label">Golden rule</span>
+      <p>Don't rewrite history that has already been pushed and shared, unless everyone on that branch agrees.</p>
+    </div>
+
+    <h2 id="conflicts">8. Resolving a merge conflict</h2>
+    <p>A conflict happens when two branches change the same lines. Git stops and marks the file like this:</p>
+    <pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+&lt;p&gt;Contact: shlok0419@gmail.com&lt;/p&gt;
+=======
+&lt;p&gt;Contact: hello@example.com&lt;/p&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/contact</code></pre>
+    <ol class="steps">
+      <li><strong>Open the file</strong> and decide which content is correct. Delete the three marker lines.</li>
+      <li><strong>Mark it resolved</strong> with <code>git add index.html</code>.</li>
+      <li><strong>Finish the merge</strong> with <code>git commit</code>. Git fills in a default message.</li>
+    </ol>
+    <p>Run <code>git status</code> at any point to see which files still have conflicts.</p>
+
+    <h2 id="undo">9. Undoing mistakes</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Situation</th><th>Command</th><th>Effect</th></tr>
+        <tr><td>Discard edits to one file</td><td><code>git restore file</code></td><td>Reverts the file to the last commit. The edits are lost.</td></tr>
+        <tr><td>Unstage a file</td><td><code>git restore --staged file</code></td><td>Keeps the edits, removes them from staging.</td></tr>
+        <tr><td>Fix the last commit message</td><td><code>git commit --amend -m "New message"</code></td><td>Rewrites the last commit. Avoid it after pushing.</td></tr>
+        <tr><td>Undo a commit, keep changes staged</td><td><code>git reset --soft HEAD~1</code></td><td>Removes the commit, changes stay staged.</td></tr>
+        <tr><td>Undo a commit, keep changes unstaged</td><td><code>git reset --mixed HEAD~1</code></td><td>Removes the commit, changes stay in your files.</td></tr>
+        <tr><td>Undo a commit and discard its changes</td><td><code>git reset --hard HEAD~1</code></td><td><strong>Destructive.</strong> The changes are gone.</td></tr>
+        <tr><td>Undo a pushed commit safely</td><td><code>git revert COMMIT</code></td><td>Adds a new commit that reverses the change. Safe for shared history.</td></tr>
+        <tr><td>Find a lost commit</td><td><code>git reflog</code></td><td>Lists recent positions of HEAD, so you can return to one.</td></tr>
+      </table>
+    </div>
+    <div class="callout warn">
+      <span class="label">Before any reset</span>
+      <p>Run <code>git status</code> and <code>git log --oneline -3</code> first, and be sure you understand what will be lost.</p>
+    </div>
+
+    <h2 id="remotes">10. Remotes and GitHub</h2>
+    <p>A <strong>remote</strong> is another copy of your repository. <code>origin</code> is the default name for the GitHub copy.</p>
+    <pre><code>git remote add origin https://github.com/USER/hello-cloud.git
+git remote -v                    # show remote URLs
+git push -u origin main          # first push, sets the upstream branch
+git push                         # later pushes
+git fetch origin                 # download changes without merging
+git pull                         # fetch and merge the remote changes</code></pre>
+    <p>On a team, you usually work through a <strong>pull request</strong>. You push a branch, open a pull request on GitHub, get a review, then merge. This project uses GitHub Pages, which publishes the files on <code>main</code> as a website.</p>
+    <div class="callout">
+      <span class="label">Authentication</span>
+      <p>GitHub doesn't accept account passwords for Git. Use a Personal Access Token (Settings, Developer settings, Tokens) or an SSH key.</p>
+    </div>
+
+    <h2 id="ignore">11. The .gitignore file</h2>
+    <p>A <code>.gitignore</code> file lists files and folders that Git should never track, such as logs, editor files, and secrets.</p>
+    <pre><code># .gitignore
+.DS_Store
+*.log
+.env
+node_modules/
+*.pem
+*.key</code></pre>
+    <p>A <code>.gitignore</code> rule only stops new files from being tracked. A file that was already committed stays in history until you remove it.</p>
+
+    <h2 id="secrets">12. Never commit secrets</h2>
+    <p>Deleting a file in a later commit doesn't remove it from history. Anyone who can clone the repository can still read the old version.</p>
+    <div class="callout warn">
+      <span class="label">If a secret is pushed</span>
+      <p>Revoke or rotate the key or password first. The leaked value is already compromised, so cleaning the history alone is not enough.</p>
+    </div>
+    <p>Keep <code>~/.ssh</code> and <code>~/.aws</code> outside any repository, and never paste keys or passwords into chats or commit messages.</p>
+
+    <h2>Practice</h2>
+    <ol class="steps">
+      <li>Create a branch <code>feature/practice</code>, add a file, commit it, switch back to <code>main</code>, and merge it. Then run <code>git log --oneline --graph --all</code>.</li>
+      <li>Create a deliberate conflict by editing the same line on two branches. Merge, resolve the conflict, and commit.</li>
+      <li>Make a commit, then undo it with <code>git revert</code>. Compare the history before and after.</li>
+      <li>Use <code>git reflog</code> to find a commit you reset away, then recover it.</li>
+    </ol>
+  </main>
+
+  <footer>Hello Cloud &middot; <a href="index.html">Home</a> &middot; Contact: <a href="mailto:shlok0419@gmail.com">shlok0419@gmail.com</a></footer>
+</body>
+</html>
