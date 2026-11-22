@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevOps | Hello Cloud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="index.html">Hello Cloud</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="linux.html">Linux</a></li>
+      <li><a href="networking.html">Networking</a></li>
+      <li><a href="cloud.html">Cloud</a></li>
+      <li><a href="git.html">Git</a></li>
+      <li><a href="devops.html">DevOps</a></li>
+      <li><a href="commands.html">Commands</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-hero">
+    <div class="inner">
+      <p class="eyebrow">Unit 5</p>
+      <h1>DevOps and Operations</h1>
+      <p class="lead">DevOps joins development and operations so software is built, tested, and deployed in small, frequent, automated steps. This page covers the lifecycle, CI and CD, infrastructure as code, containers, monitoring, and cost control.</p>
+      <div class="toc">
+        <a href="#lifecycle">Lifecycle</a>
+        <a href="#cicd">CI and CD</a>
+        <a href="#iac">Infrastructure as code</a>
+        <a href="#containers">Containers</a>
+        <a href="#monitoring">Monitoring</a>
+        <a href="#cost">Cost control</a>
+        <a href="#security">Security habits</a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <h2 id="lifecycle">1. The DevOps lifecycle</h2>
+    <p>DevOps is a loop, not a straight line. Each stage feeds the next, and feedback from production goes back into planning.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Stage</th><th>Question it answers</th><th>Tools (examples)</th></tr>
+        <tr><td>Plan</td><td>What should we build next?</td><td>Issues, project boards</td></tr>
+        <tr><td>Code</td><td>How do we write and store it?</td><td>Git, GitHub</td></tr>
+        <tr><td>Build</td><td>Does it compile and package correctly?</td><td>GitHub Actions, Jenkins</td></tr>
+        <tr><td>Test</td><td>Does it work and stay correct?</td><td>Unit and integration tests</td></tr>
+        <tr><td>Release</td><td>Is this version approved?</td><td>Version tags, release notes</td></tr>
+        <tr><td>Deploy</td><td>How does it reach users?</td><td>Terraform, Docker, CloudFormation</td></tr>
+        <tr><td>Operate</td><td>How does it run day to day?</td><td>Load balancers, auto scaling</td></tr>
+        <tr><td>Monitor</td><td>Is it healthy, and what should change?</td><td>CloudWatch, Azure Monitor</td></tr>
+      </table>
+    </div>
+    <p>The goal is a short feedback loop. A problem found in minutes by an automated test is far cheaper to fix than one found by a customer.</p>
+
+    <h2 id="cicd">2. CI, continuous delivery, and continuous deployment</h2>
+    <div class="grid-2">
+      <div class="card">
+        <span class="badge">CI</span>
+        <h3>Continuous Integration</h3>
+        <p>Developers merge small changes often. Each change is built and tested automatically, so a broken change is found within minutes.</p>
+      </div>
+      <div class="card">
+        <span class="badge peach">CD</span>
+        <h3>Continuous Delivery and Deployment</h3>
+        <p>Delivery keeps every passing change ready to release, with a manual approval step. Deployment releases every passing change to production automatically.</p>
+      </div>
+    </div>
+    <pre><code>Commit -&gt; Build -&gt; Test -&gt; Package -&gt; Deploy to staging -&gt; Approve -&gt; Deploy to production
+|_________ CI _________|                                    |____ CD ____|</code></pre>
+    <div class="callout">
+      <span class="label">Example</span>
+      <p>A GitHub Actions workflow file in <code>.github/workflows/</code> can run on every push to <code>main</code>. It checks out the code, runs the tests, and reports a pass or fail on the commit.</p>
+    </div>
+
+    <h2 id="iac">3. Infrastructure as code (IaC)</h2>
+    <p>Infrastructure as code means describing servers, networks, and storage in files. Those files can be versioned in Git, reviewed like code, and applied the same way every time.</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Declarative</h3>
+        <p>You describe the end state, such as "one bucket exists with this policy", and the tool works out the steps. Examples: Terraform, CloudFormation.</p>
+      </div>
+      <div class="card">
+        <h3>Imperative</h3>
+        <p>You list the steps in order. Examples: a shell script, or an Ansible playbook task list.</p>
+      </div>
+    </div>
+    <pre><code># main.tf: a Terraform file that describes one S3 bucket
+resource "aws_s3_bucket" "site" {
+  bucket = "hello-cloud-shlok-2026"
+}
+
+# Commands
+terraform init      # download the AWS provider
+terraform plan      # show what will change, without changing anything
+terraform apply     # create the resources
+terraform destroy   # remove them when finished</code></pre>
+    <p>Benefits: repeatable setups, a history of changes in Git, and easy cleanup. Cleanup matters for cost control, because you can rebuild resources when you need them.</p>
+
+    <h2 id="containers">4. Containers</h2>
+    <p>A <strong>container</strong> packages an application with its libraries, but shares the host's operating system kernel. A <strong>virtual machine</strong> runs a full guest operating system on top of a hypervisor.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Feature</th><th>Virtual machine</th><th>Container</th></tr>
+        <tr><td>Includes</td><td>A full guest OS, the app, and its libraries</td><td>The app and its libraries, sharing the host kernel</td></tr>
+        <tr><td>Start time</td><td>Minutes</td><td>Seconds or less</td></tr>
+        <tr><td>Size</td><td>Gigabytes</td><td>Megabytes</td></tr>
+        <tr><td>Isolation</td><td>Strong, with a separate kernel</td><td>Good, but shares the host kernel</td></tr>
+      </table>
+    </div>
+    <p>Docker builds containers from a <strong>Dockerfile</strong>:</p>
+    <pre><code># Dockerfile
+FROM nginx:alpine
+COPY index.html /usr/share/nginx/html/index.html
+
+# Commands
+docker build -t hello-cloud .         # build an image from the Dockerfile
+docker run -d -p 8080:80 hello-cloud  # run it, mapping host port 8080 to container port 80
+docker ps                             # list running containers
+docker stop CONTAINER_ID              # stop one</code></pre>
+    <div class="callout warn">
+      <span class="label">Lab note</span>
+      <p>Install Docker in your VM by following the official Ubuntu instructions before running these commands. Don't run containers from untrusted images.</p>
+    </div>
+
+    <h2 id="monitoring">5. Monitoring with Amazon CloudWatch</h2>
+    <p>CloudWatch collects <strong>metrics</strong> (numbers over time, such as CPU use), <strong>logs</strong> (text output from services), and <strong>alarms</strong> (notifications when a metric crosses a threshold). Dashboards show several metrics together.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Concept</th><th>What it does</th><th>Example</th></tr>
+        <tr><td>Metric</td><td>A measured value over time</td><td>EC2 CPUUtilization</td></tr>
+        <tr><td>Log group</td><td>Stores log streams from a service</td><td>Web server access logs</td></tr>
+        <tr><td>Alarm</td><td>Triggers when a metric breaks a threshold</td><td>Estimated charges above $5 send an email</td></tr>
+        <tr><td>Dashboard</td><td>A page of graphs</td><td>Cost and CPU in one view</td></tr>
+      </table>
+    </div>
+    <p>Billing metrics appear in CloudWatch as <code>EstimatedCharges</code>, in the <code>us-east-1</code> Region. This is where a billing alarm is created.</p>
+
+    <h2 id="cost">6. Cost control habits</h2>
+    <ol class="steps">
+      <li><strong>Set a budget and an alert first.</strong> A zero-spend or low-amount budget catches surprises early.</li>
+      <li><strong>Tag resources</strong> with a project name, so you can see which work costs money.</li>
+      <li><strong>Stop or terminate</strong> EC2 instances at the end of each session.</li>
+      <li><strong>Delete unused resources</strong>, such as old buckets, volumes, and Elastic IP addresses.</li>
+      <li><strong>Use lifecycle rules</strong> on S3 to move old files to cheaper storage classes.</li>
+      <li><strong>Right-size</strong> instances by choosing the smallest type that does the job.</li>
+    </ol>
+
+    <h2 id="security">7. Security habits</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Least privilege</h3>
+        <p>Give each user and role only the permissions it needs, such as S3 access without full admin rights.</p>
+      </div>
+      <div class="card">
+        <h3>Don't use root daily</h3>
+        <p>Create an IAM user or role for everyday work, and turn on multi-factor authentication (MFA) for the root account.</p>
+      </div>
+      <div class="card">
+        <h3>Rotate and remove keys</h3>
+        <p>Delete access keys you no longer use, and rotate any key that may have leaked.</p>
+      </div>
+      <div class="card">
+        <h3>Close unneeded ports</h3>
+        <p>Open only the ports a service needs, and limit SSH to your own IP address where possible.</p>
+      </div>
+    </div>
+
+    <h2>Practice</h2>
+    <ol class="steps">
+      <li>Write the lifecycle stages in order, and name one tool you could use for each.</li>
+      <li>Explain in your own words why a container starts faster than a virtual machine.</li>
+      <li>Write a three-line Terraform file for a bucket and explain each line. Don't apply it yet.</li>
+      <li>List five things that could raise your cloud bill without warning, and how you would catch each one.</li>
+    </ol>
+  </main>
+
+  <footer>Hello Cloud &middot; <a href="index.html">Home</a> &middot; Contact: <a href="mailto:shlok0419@gmail.com">shlok0419@gmail.com</a></footer>
+</body>
+</html>
