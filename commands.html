@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commands | Hello Cloud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Hello Cloud</span>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="commands.html">Commands</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1>Command Reference</h1>
+    <p>Commands I practiced in the Ubuntu VM and in this project. Use <code>man command</code> or <code>command --help</code> for full options.</p>
+
+    <h2>Linux: Navigation and Files</h2>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>pwd</code></td><td>Print the current directory</td></tr>
+      <tr><td><code>ls -la</code></td><td>List all files, including hidden ones, with details</td></tr>
+      <tr><td><code>cd ~</code></td><td>Go to your home directory</td></tr>
+      <tr><td><code>cd ..</code></td><td>Go up one directory</td></tr>
+      <tr><td><code>mkdir -p a/b/c</code></td><td>Create nested directories</td></tr>
+      <tr><td><code>touch file.txt</code></td><td>Create an empty file</td></tr>
+      <tr><td><code>cp -r src/ dest/</code></td><td>Copy a directory recursively</td></tr>
+      <tr><td><code>mv old.txt new.txt</code></td><td>Move or rename a file</td></tr>
+      <tr><td><code>rm -r folder/</code></td><td>Delete a directory and its contents</td></tr>
+      <tr><td><code>tree</code></td><td>Show a directory structure</td></tr>
+      <tr><td><code>du -sh folder/</code></td><td>Show the size of a folder</td></tr>
+      <tr><td><code>df -h</code></td><td>Show disk space</td></tr>
+    </table>
+
+    <h2>Linux: Viewing and Searching</h2>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>cat file.txt</code></td><td>Print a whole file</td></tr>
+      <tr><td><code>less file.txt</code></td><td>View a file page by page (press q to quit)</td></tr>
+      <tr><td><code>head -n 20 file</code></td><td>Show the first 20 lines</td></tr>
+      <tr><td><code>tail -f log.txt</code></td><td>Follow a file as it grows</td></tr>
+      <tr><td><code>grep -ri "todo" .</code></td><td>Search recursively for text, ignoring case</td></tr>
+      <tr><td><code>find . -name "*.html"</code></td><td>Find files by name</td></tr>
+      <tr><td><code>echo "hi" &gt; file.txt</code></td><td>Write text, overwriting the file</td></tr>
+      <tr><td><code>echo "hi" &gt;&gt; file.txt</code></td><td>Append text to a file</td></tr>
+      <tr><td><code>cmd1 | cmd2</code></td><td>Pipe the output of one command into another</td></tr>
+    </table>
+
+    <h2>Linux: Permissions</h2>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>ls -l file</code></td><td>Show permissions and owner</td></tr>
+      <tr><td><code>chmod 600 secret.txt</code></td><td>Owner can read and write only</td></tr>
+      <tr><td><code>chmod 755 script.sh</code></td><td>Owner has full access; others can read and run</td></tr>
+      <tr><td><code>chmod +x script.sh</code></td><td>Make a file executable</td></tr>
+      <tr><td><code>chown user:group file</code></td><td>Change owner and group</td></tr>
+    </table>
+    <p>Read = 4, write = 2, execute = 1. Add them for owner, group, and others, so 7 is rwx, 6 is rw-, and 5 is r-x.</p>
+
+    <h2>Linux: Processes, Packages, and Services</h2>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>ps aux</code></td><td>List all running processes</td></tr>
+      <tr><td><code>top</code> / <code>htop</code></td><td>Live view of processes and resource use</td></tr>
+      <tr><td><code>kill PID</code></td><td>Ask a process to stop</td></tr>
+      <tr><td><code>kill -9 PID</code></td><td>Force a process to stop</td></tr>
+      <tr><td><code>sleep 300 &amp;</code></td><td>Run a command in the background</td></tr>
+      <tr><td><code>sudo apt update</code></td><td>Refresh the package list</td></tr>
+      <tr><td><code>sudo apt install -y tree</code></td><td>Install a package</td></tr>
+      <tr><td><code>sudo systemctl status ssh</code></td><td>Check a service's status</td></tr>
+      <tr><td><code>journalctl -u ssh -n 30</code></td><td>Show recent logs for a service</td></tr>
+    </table>
+
+    <h2>Linux: Networking and SSH</h2>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>hostname -I</code></td><td>Show the machine's IP addresses</td></tr>
+      <tr><td><code>ip addr</code></td><td>Show network interfaces and addresses</td></tr>
+      <tr><td><code>ip route</code></td><td>Show the routing table and default gateway</td></tr>
+      <tr><td><code>ss -tulpn</code></td><td>Show listening ports and their processes</td></tr>
+      <tr><td><code>ping -c 4 google.com</code></td><td>Test connectivity</td></tr>
+      <tr><td><code>traceroute google.com</code></td><td>Show the path to a host</td></tr>
+      <tr><td><code>nslookup google.com</code></td><td>Query DNS</td></tr>
+      <tr><td><code>dig google.com +short</code></td><td>Short DNS lookup</td></tr>
+      <tr><td><code>ssh-keygen -t ed25519</code></td><td>Create an SSH key pair</td></tr>
+      <tr><td><code>ssh-copy-id user@host</code></td><td>Install your public key on a server</td></tr>
+      <tr><td><code>ssh user@host</code></td><td>Log in to a server</td></tr>
+    </table>
+
+    <h2>Git</h2>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>git config --global user.name "Name"</code></td><td>Set your commit author name</td></tr>
+      <tr><td><code>git init -b main</code></td><td>Start a repository on the main branch</td></tr>
+      <tr><td><code>git status</code></td><td>Show changed and staged files</td></tr>
+      <tr><td><code>git add file</code></td><td>Stage a file</td></tr>
+      <tr><td><code>git commit -m "message"</code></td><td>Save staged changes as a commit</td></tr>
+      <tr><td><code>git log --oneline --graph --all</code></td><td>Show history and branches</td></tr>
+      <tr><td><code>git diff</code></td><td>Show unstaged changes</td></tr>
+      <tr><td><code>git switch -c feature/x</code></td><td>Create and switch to a branch</td></tr>
+      <tr><td><code>git switch main</code></td><td>Switch to another branch</td></tr>
+      <tr><td><code>git merge feature/x</code></td><td>Merge a branch into the current one</td></tr>
+      <tr><td><code>git remote add origin URL</code></td><td>Connect to a remote repository</td></tr>
+      <tr><td><code>git push -u origin main</code></td><td>Upload commits and set the upstream branch</td></tr>
+      <tr><td><code>git pull</code></td><td>Download and merge remote changes</td></tr>
+      <tr><td><code>git restore --staged file</code></td><td>Unstage a file</td></tr>
+      <tr><td><code>git commit --amend -m "msg"</code></td><td>Change the last commit message</td></tr>
+      <tr><td><code>git revert COMMIT</code></td><td>Create a commit that undoes another commit</td></tr>
+      <tr><td><code>git stash</code> / <code>git stash pop</code></td><td>Save and restore uncommitted changes</td></tr>
+    </table>
+
+    <h3>Example workflow</h3>
+    <pre><code>git switch -c feature/about-page
+echo "&lt;h1&gt;About Me&lt;/h1&gt;" &gt; about.html
+git add about.html
+git commit -m "Add about page"
+git switch main
+git merge feature/about-page
+git push</code></pre>
+  </main>
+
+  <footer>Hello Cloud. Contact: shlok0419@gmail.com</footer>
+</body>
+</html>
