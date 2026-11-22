@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Networking | Hello Cloud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="index.html">Hello Cloud</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="linux.html">Linux</a></li>
+      <li><a href="networking.html">Networking</a></li>
+      <li><a href="cloud.html">Cloud</a></li>
+      <li><a href="git.html">Git</a></li>
+      <li><a href="devops.html">DevOps</a></li>
+      <li><a href="commands.html">Commands</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-hero">
+    <div class="inner">
+      <p class="eyebrow">Unit 2</p>
+      <h1>Networking for Cloud</h1>
+      <p class="lead">Every cloud service is reached over a network. This page covers the network models, IP addressing and CIDR, subnets, DNS, routing, ports, and a method for finding out why a connection fails.</p>
+      <div class="toc">
+        <a href="#models">OSI and TCP/IP</a>
+        <a href="#transport">TCP and UDP</a>
+        <a href="#ipv4">IPv4 and CIDR</a>
+        <a href="#subnet">Subnet example</a>
+        <a href="#dns">DNS</a>
+        <a href="#routing">Routing</a>
+        <a href="#ports">Ports</a>
+        <a href="#cloudnet">Cloud networking</a>
+        <a href="#ladder">Troubleshooting</a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <h2 id="models">1. OSI and TCP/IP models</h2>
+    <p>A <strong>network model</strong> divides communication into layers, so each layer solves one problem. The OSI model has seven layers and is mainly used for teaching and troubleshooting. The TCP/IP model has four layers and is what the internet actually uses.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>OSI layer</th><th>Name</th><th>Job</th><th>Examples</th><th>TCP/IP layer</th></tr>
+        <tr><td>7</td><td>Application</td><td>Services the user sees</td><td>HTTP, HTTPS, SSH, DNS</td><td rowspan="3">Application</td></tr>
+        <tr><td>6</td><td>Presentation</td><td>Encoding and encryption format</td><td>TLS, UTF-8</td></tr>
+        <tr><td>5</td><td>Session</td><td>Opens and manages sessions</td><td>RPC</td></tr>
+        <tr><td>4</td><td>Transport</td><td>End-to-end delivery and ports</td><td>TCP, UDP</td><td>Transport</td></tr>
+        <tr><td>3</td><td>Network</td><td>Logical addressing and routing</td><td>IP, ICMP</td><td>Internet</td></tr>
+        <tr><td>2</td><td>Data link</td><td>Delivery on one local network using MAC addresses</td><td>Ethernet, Wi-Fi, switches</td><td rowspan="2">Network access</td></tr>
+        <tr><td>1</td><td>Physical</td><td>Bits on the cable or radio signal</td><td>Cables, signals</td></tr>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="label">Memory aid</span>
+      <p>From layer 7 down to layer 1: All People Seem To Need Data Processing.</p>
+    </div>
+
+    <h2 id="transport">2. TCP and UDP</h2>
+    <div class="grid-2">
+      <div class="card">
+        <span class="badge">TCP</span>
+        <h3>Reliable and ordered</h3>
+        <p>Opens a connection with a three-way handshake, resends lost packets, and delivers data in order. Used by HTTP, HTTPS, SSH, and email.</p>
+      </div>
+      <div class="card">
+        <span class="badge peach">UDP</span>
+        <h3>Fast and connectionless</h3>
+        <p>Sends packets with no handshake and no delivery guarantee. Used by DNS queries, video calls, and streaming, where speed matters more than perfect delivery.</p>
+      </div>
+    </div>
+
+    <h2 id="ipv4">3. IPv4 addresses and CIDR</h2>
+    <p>An IPv4 address is 32 bits, written as four decimal numbers called <strong>octets</strong>. Each octet is 8 bits, so it ranges from 0 to 255. For example, <code>192.168.0.112</code> is <code>11000000.10101000.00000000.01110000</code> in binary.</p>
+    <p>The <strong>CIDR prefix</strong> (the number after the slash) says how many leading bits identify the network. The remaining bits identify hosts inside that network.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>CIDR</th><th>Subnet mask</th><th>Total addresses</th><th>Usable hosts</th><th>Typical use</th></tr>
+        <tr><td>/8</td><td>255.0.0.0</td><td>16,777,216</td><td>16,777,214</td><td>Very large private networks</td></tr>
+        <tr><td>/16</td><td>255.255.0.0</td><td>65,536</td><td>65,534</td><td>A cloud VPC, for example 10.0.0.0/16</td></tr>
+        <tr><td>/24</td><td>255.255.255.0</td><td>256</td><td>254</td><td>A home or office subnet</td></tr>
+        <tr><td>/26</td><td>255.255.255.192</td><td>64</td><td>62</td><td>A small subnet</td></tr>
+        <tr><td>/28</td><td>255.255.255.240</td><td>16</td><td>14</td><td>A few servers</td></tr>
+        <tr><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td><td>A point-to-point link</td></tr>
+        <tr><td>/32</td><td>255.255.255.255</td><td>1</td><td>1</td><td>A single specific address, such as a firewall rule</td></tr>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="label">Formula</span>
+      <p>Host bits = 32 minus the prefix. Total addresses = 2 to the power of the host bits. Usable hosts = total minus 2, because the first address is the <strong>network address</strong> and the last is the <strong>broadcast address</strong>.</p>
+    </div>
+    <h3>Public and private addresses</h3>
+    <p>Private addresses can be reused inside many networks, but they are not routed on the public internet. Your home router translates them to one public address using NAT (Network Address Translation).</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Range</th><th>Type</th><th>Where you see it</th></tr>
+        <tr><td>10.0.0.0 to 10.255.255.255 (10.0.0.0/8)</td><td>Private</td><td>Cloud networks and large companies</td></tr>
+        <tr><td>172.16.0.0 to 172.31.255.255 (172.16.0.0/12)</td><td>Private</td><td>Docker bridge networks, for example 172.17.0.1</td></tr>
+        <tr><td>192.168.0.0 to 192.168.255.255 (192.168.0.0/16)</td><td>Private</td><td>Home routers, for example 192.168.0.112</td></tr>
+        <tr><td>127.0.0.1</td><td>Loopback</td><td>The machine talking to itself</td></tr>
+        <tr><td>Everything else, for example 192.178.173.138</td><td>Public</td><td>Google and other internet servers</td></tr>
+      </table>
+    </div>
+
+    <h2 id="subnet">4. Worked example: splitting a network</h2>
+    <p>Take the network <code>192.168.1.0/26</code>.</p>
+    <ol class="steps">
+      <li><strong>Host bits:</strong> 32 minus 26 = 6. Total addresses: 2<sup>6</sup> = 64.</li>
+      <li><strong>Block size:</strong> 256 minus the mask's last octet (192) = 64. Each subnet starts at a multiple of 64.</li>
+      <li><strong>Network address:</strong> <code>192.168.1.0</code></li>
+      <li><strong>Usable hosts:</strong> <code>192.168.1.1</code> to <code>192.168.1.62</code>, which is 62 hosts.</li>
+      <li><strong>Broadcast address:</strong> <code>192.168.1.63</code></li>
+      <li><strong>Next subnet:</strong> <code>192.168.1.64/26</code></li>
+    </ol>
+    <p>Check your answer with <code>ipcalc 192.168.1.0/26</code>. Install the tool with <code>sudo apt install ipcalc</code> if needed.</p>
+
+    <h2 id="dns">5. DNS: names to addresses</h2>
+    <p>The <strong>Domain Name System</strong> translates names such as <code>google.com</code> into IP addresses. A lookup moves through several servers: your resolver asks a root server, then the server for the top-level domain (<code>.com</code>), then the authoritative server for the domain, which holds the final answer.</p>
+    <pre><code>Your machine  -&gt;  Local resolver (127.0.0.53 on Ubuntu)
+              -&gt;  Recursive resolver (your router, ISP, or 8.8.8.8)
+              -&gt;  Root server  -&gt;  .com server  -&gt;  authoritative server
+              &lt;-  answer, cached for the TTL (time to live) in seconds</code></pre>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Record</th><th>Stores</th><th>Example</th></tr>
+        <tr><td>A</td><td>IPv4 address</td><td>example.com points to an IPv4 address</td></tr>
+        <tr><td>AAAA</td><td>IPv6 address</td><td>example.com points to an IPv6 address</td></tr>
+        <tr><td>CNAME</td><td>Alias for another name</td><td>www points to example.com</td></tr>
+        <tr><td>MX</td><td>Mail servers for the domain</td><td>Where email for the domain is delivered</td></tr>
+        <tr><td>NS</td><td>Authoritative name servers</td><td>Which servers answer for the domain</td></tr>
+        <tr><td>TXT</td><td>Text data, often used for verification</td><td>Proof that you own a domain</td></tr>
+      </table>
+    </div>
+    <pre><code>nslookup google.com          # full answer from your resolver
+dig google.com +short        # short list of IP addresses
+dig MX gmail.com +short      # mail servers for a domain
+dig @8.8.8.8 google.com      # ask Google's public DNS directly</code></pre>
+
+    <h2 id="routing">6. Routing and the default gateway</h2>
+    <p>A host sends traffic for its own subnet directly. Traffic for any other network goes to the <strong>default gateway</strong>, usually your router. The routing table decides which route applies.</p>
+    <pre><code>$ ip route
+default via 192.168.0.1 dev enp0s3 proto dhcp metric 100
+192.168.0.0/24 dev enp0s3 proto kernel scope link src 192.168.0.112</code></pre>
+    <p>Read it this way: traffic for any destination not listed goes to <code>192.168.0.1</code> through <code>enp0s3</code>. Traffic for <code>192.168.0.0/24</code> stays on the local network.</p>
+
+    <h2 id="ports">7. Ports and services</h2>
+    <p>An IP address identifies a machine. A <strong>port</strong> identifies a service on that machine. Ports range from 0 to 65535. Ports 0 to 1023 are the well-known ports.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Port</th><th>Protocol</th><th>Service</th></tr>
+        <tr><td>22</td><td>TCP</td><td>SSH</td></tr>
+        <tr><td>25</td><td>TCP</td><td>SMTP (sending email)</td></tr>
+        <tr><td>53</td><td>UDP and TCP</td><td>DNS</td></tr>
+        <tr><td>80</td><td>TCP</td><td>HTTP</td></tr>
+        <tr><td>443</td><td>TCP</td><td>HTTPS</td></tr>
+        <tr><td>3306</td><td>TCP</td><td>MySQL</td></tr>
+        <tr><td>5432</td><td>TCP</td><td>PostgreSQL</td></tr>
+        <tr><td>3389</td><td>TCP</td><td>Remote Desktop (RDP)</td></tr>
+      </table>
+    </div>
+    <p>Check which ports your VM is listening on with <code>ss -tulpn</code>. You saw port 22 open for SSH.</p>
+
+    <h2 id="cloudnet">8. Networking in the cloud</h2>
+    <p>Cloud providers rebuild these ideas in software. In AWS, a <strong>VPC</strong> (Virtual Private Cloud) is your own private network. Inside it you create <strong>subnets</strong>, <strong>route tables</strong> that define where traffic goes, and an <strong>internet gateway</strong> for internet access.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Control</th><th>Applies to</th><th>Behaviour</th></tr>
+        <tr><td>Security group</td><td>An instance, such as an EC2 server</td><td>Stateful. If inbound traffic is allowed, the reply is allowed automatically. You write allow rules only.</td></tr>
+        <tr><td>Network ACL</td><td>A whole subnet</td><td>Stateless. Inbound and outbound rules are checked separately, so both directions need a rule.</td></tr>
+      </table>
+    </div>
+    <p>To serve a website from EC2, the security group needs an inbound rule for port 80 (HTTP) or 443 (HTTPS). SSH needs port 22, ideally limited to your own IP address.</p>
+
+    <h2 id="ladder">9. Troubleshooting ladder</h2>
+    <p>Test from the inside out. Each step rules out one layer, so you don't have to guess.</p>
+    <ol class="steps">
+      <li><strong>Interface:</strong> <code>ip addr</code>. Does the interface have an IP address?</li>
+      <li><strong>Gateway:</strong> <code>ip route</code>, then <code>ping -c 4 192.168.0.1</code>. Can you reach your router?</li>
+      <li><strong>Internet by IP:</strong> <code>ping -c 4 8.8.8.8</code>. If this works but names fail, the problem is DNS.</li>
+      <li><strong>DNS:</strong> <code>nslookup google.com</code> or <code>dig google.com +short</code>.</li>
+      <li><strong>Path:</strong> <code>traceroute google.com</code>. Stars (*) mean a router didn't reply. That's common and not always a fault.</li>
+      <li><strong>Service:</strong> <code>ss -tulpn</code> to confirm the port is listening, then <code>curl -I http://localhost</code> for a web server.</li>
+    </ol>
+    <div class="callout warn">
+      <span class="label">Common mistake</span>
+      <p>A successful ping to a name doesn't prove the server is reachable. Ping the IP first, then the name, so you know which layer is failing.</p>
+    </div>
+
+    <h2>Practice in your VM</h2>
+    <ol class="steps">
+      <li>By hand, work out the network address, broadcast address, and usable range for <code>10.0.0.128/25</code>. Then check with <code>ipcalc 10.0.0.128/25</code>.</li>
+      <li>Run <code>dig @8.8.8.8 google.com +short</code> and compare the result with <code>dig google.com +short</code>.</li>
+      <li>Run <code>ping -c 3 8.8.8.8</code> and <code>ping -c 3 google.com</code>. Explain what each result tells you.</li>
+      <li>Capture traffic in Wireshark on your Windows machine while you run a ping, and filter with <code>icmp</code>.</li>
+    </ol>
+  </main>
+
+  <footer>Hello Cloud &middot; <a href="index.html">Home</a> &middot; Contact: <a href="mailto:shlok0419@gmail.com">shlok0419@gmail.com</a></footer>
+</body>
+</html>
