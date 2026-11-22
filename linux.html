@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux | Hello Cloud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="index.html">Hello Cloud</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="linux.html">Linux</a></li>
+      <li><a href="networking.html">Networking</a></li>
+      <li><a href="cloud.html">Cloud</a></li>
+      <li><a href="git.html">Git</a></li>
+      <li><a href="devops.html">DevOps</a></li>
+      <li><a href="commands.html">Commands</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-hero">
+    <div class="inner">
+      <p class="eyebrow">Unit 1</p>
+      <h1>Linux Fundamentals</h1>
+      <p class="lead">Most cloud servers run Linux. Understanding the file system, permissions, processes, packages, and SSH is the foundation for everything else in this project.</p>
+      <div class="toc">
+        <a href="#kernel">Kernel and distros</a>
+        <a href="#filesystem">File system</a>
+        <a href="#files">Files and directories</a>
+        <a href="#permissions">Permissions</a>
+        <a href="#processes">Processes</a>
+        <a href="#packages">Packages</a>
+        <a href="#ssh">SSH</a>
+        <a href="#troubleshoot">Troubleshooting</a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <h2 id="kernel">1. Kernel and distributions</h2>
+    <p>The <strong>kernel</strong> is the core of the operating system. It manages the CPU, memory, devices, and running programs. A <strong>distribution</strong> (distro) packages the kernel with tools, libraries, and a package manager. Ubuntu, Debian, Red Hat, and Amazon Linux are all distributions.</p>
+    <p>Ubuntu uses <code>apt</code> to install software. Red Hat and Amazon Linux use <code>dnf</code> or <code>yum</code>. Most core commands, such as <code>ls</code>, <code>cd</code>, and <code>grep</code>, are identical across all of them.</p>
+
+    <h2 id="filesystem">2. The file system hierarchy</h2>
+    <p>Linux uses a single tree that starts at <code>/</code> (the root). Disks and devices are attached somewhere inside this tree. Each top-level directory has a standard purpose:</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Directory</th><th>Purpose</th><th>Example</th></tr>
+        <tr><td><code>/</code></td><td>Root of the whole file system</td><td>Everything lives under here</td></tr>
+        <tr><td><code>/home</code></td><td>Personal files for each user</td><td><code>/home/vboxuser</code></td></tr>
+        <tr><td><code>/root</code></td><td>Home folder of the root (admin) user</td><td>Not the same as <code>/home</code></td></tr>
+        <tr><td><code>/etc</code></td><td>System-wide configuration</td><td><code>/etc/ssh/sshd_config</code></td></tr>
+        <tr><td><code>/var</code></td><td>Data that changes while the system runs</td><td><code>/var/log</code> for logs</td></tr>
+        <tr><td><code>/usr</code></td><td>Installed programs and libraries</td><td><code>/usr/bin</code> holds most commands</td></tr>
+        <tr><td><code>/tmp</code></td><td>Temporary files, often cleared on reboot</td><td>Scratch space</td></tr>
+        <tr><td><code>/opt</code></td><td>Optional third-party software</td><td>Vendor applications</td></tr>
+        <tr><td><code>/dev</code></td><td>Device files that represent hardware</td><td><code>/dev/sda</code> is a disk</td></tr>
+        <tr><td><code>/proc</code></td><td>Virtual files showing live kernel and process data</td><td><code>/proc/cpuinfo</code></td></tr>
+      </table>
+    </div>
+    <h3>Absolute and relative paths</h3>
+    <p>An <strong>absolute path</strong> starts at <code>/</code> and always points to the same place: <code>/home/vboxuser/hello-cloud/index.html</code>. A <strong>relative path</strong> starts from where you are now, so <code>hello-cloud/index.html</code> works only from <code>/home/vboxuser</code>.</p>
+    <p>Shortcuts: <code>~</code> is your home folder, <code>.</code> is the current folder, and <code>..</code> is the parent folder.</p>
+    <div class="callout">
+      <span class="label">Tip</span>
+      <p>Run <code>pwd</code> before <code>rm</code> or <code>mv</code>. Most beginner mistakes come from running a command in the wrong folder.</p>
+    </div>
+
+    <h2 id="files">3. Working with files and directories</h2>
+    <pre><code>pwd                         # where am I?
+ls -la                      # list everything, including hidden files
+mkdir -p ~/lab/a/b          # create nested folders in one step
+touch notes.txt             # create an empty file
+cp notes.txt backup.txt     # copy a file
+cp -r src/ dest/            # copy a folder and its contents
+mv old.txt new.txt          # rename or move
+rm notes.txt                # delete a file (no recycle bin)
+rm -r lab/                  # delete a folder and its contents
+cat file.txt                # print a file
+less file.txt               # scroll a file (press q to quit)
+head -n 5 file.txt          # first 5 lines
+tail -n 5 file.txt          # last 5 lines
+tail -f app.log             # follow a log as it grows
+wc -l file.txt              # count lines</code></pre>
+    <div class="callout warn">
+      <span class="label">Careful</span>
+      <p><code>rm</code> deletes permanently. There is no undo. Check the path with <code>ls</code> first, and never run <code>rm -rf /</code> or <code>rm -rf ~</code>.</p>
+    </div>
+
+    <h3>Searching</h3>
+    <pre><code>grep "error" app.log            # lines containing "error"
+grep -ri "todo" .               # search folders recursively, ignore case
+find . -name "*.html"           # find files by name
+find /var/log -size +10M        # find files larger than 10 MB
+which python3                   # where a command lives</code></pre>
+
+    <h3>Redirection and pipes</h3>
+    <pre><code>echo "hello" &gt; file.txt        # write, overwriting the file
+echo "more" &gt;&gt; file.txt         # append to the file
+ls -l | grep "\.html"           # pipe one command's output into another
+ps aux | grep "[s]sh"           # brackets stop grep from matching itself</code></pre>
+
+    <h2 id="permissions">4. Permissions and ownership</h2>
+    <p>Every file has three permission sets: one for the <strong>owner</strong>, one for the <strong>group</strong>, and one for <strong>others</strong>. Each set can include read (<code>r</code>), write (<code>w</code>), and execute (<code>x</code>).</p>
+    <pre><code>$ ls -l index.html
+-rw-r--r-- 1 vboxuser vboxuser 512 Nov 22 08:00 index.html
+
+ -    rw-     r--     r--
+ |     |       |       |
+ |   owner   group   others
+ |
+ file type (- = file, d = directory)</code></pre>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Number</th><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td>7</td><td>rwx</td><td>Read, write, and execute</td></tr>
+        <tr><td>6</td><td>rw-</td><td>Read and write</td></tr>
+        <tr><td>5</td><td>r-x</td><td>Read and execute</td></tr>
+        <tr><td>4</td><td>r--</td><td>Read only</td></tr>
+        <tr><td>0</td><td>---</td><td>No access</td></tr>
+      </table>
+    </div>
+    <p>Each permission has a number: read is 4, write is 2, and execute is 1. Add them within each set. For example, <code>644</code> means the owner can read and write (6), and the group and others can read (4 each).</p>
+    <pre><code>chmod 644 index.html            # owner rw, everyone else r
+chmod 600 secret.txt            # owner only
+chmod u+x deploy.sh             # add execute for the owner
+chmod g-w notes.txt             # remove write for the group
+sudo chown vboxuser:vboxuser index.html   # change owner and group</code></pre>
+    <div class="callout warn">
+      <span class="label">SSH rule</span>
+      <p>SSH refuses private keys that others can read. Keep <code>~/.ssh</code> at <code>700</code> and private keys at <code>600</code>.</p>
+    </div>
+
+    <h2 id="processes">5. Processes</h2>
+    <p>A <strong>process</strong> is a running program. Each one has a <strong>PID</strong> (process ID). <code>systemd</code> is process 1 and starts the other services when the system boots.</p>
+    <pre><code>ps aux                      # every process with CPU and memory use
+ps aux | grep "[s]sh"       # find SSH processes
+top                         # live view, press q to quit
+sleep 300 &amp;                # run in the background
+jobs                        # list background jobs
+fg                          # bring the last job to the foreground
+kill 1234                   # ask process 1234 to stop (SIGTERM)
+kill -9 1234                # force it to stop (SIGKILL)
+sudo systemctl status ssh   # check a service</code></pre>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Signal</th><th>Number</th><th>Effect</th></tr>
+        <tr><td>SIGINT</td><td>2</td><td>Ctrl+C from the keyboard</td></tr>
+        <tr><td>SIGKILL</td><td>9</td><td>Stops the process immediately. It can't be caught or ignored.</td></tr>
+        <tr><td>SIGTERM</td><td>15</td><td>Polite stop request. This is the default for <code>kill</code>.</td></tr>
+      </table>
+    </div>
+    <p>Use <code>kill</code> first. Use <code>kill -9</code> only if the process ignores it, because the program gets no chance to save its data.</p>
+
+    <h2 id="packages">6. Package management</h2>
+    <p>A package manager installs software, resolves dependencies (other packages a program needs), and keeps track of versions. Ubuntu's <code>apt</code> downloads packages from online repositories.</p>
+    <pre><code>sudo apt update              # refresh the list of available packages
+sudo apt upgrade -y          # install updates for installed packages
+sudo apt install -y tree     # install a package
+apt show tree                # show details about a package
+sudo apt remove tree         # remove the program, keep its config
+sudo apt purge tree          # remove the program and its config
+sudo apt autoremove          # remove unused dependencies</code></pre>
+    <div class="callout">
+      <span class="label">Order matters</span>
+      <p>Run <code>sudo apt update</code> before <code>install</code> or <code>upgrade</code>. Update refreshes the list. Upgrade installs the newer versions.</p>
+    </div>
+
+    <h2 id="ssh">7. SSH: secure remote access</h2>
+    <p><strong>SSH</strong> (Secure Shell) gives you an encrypted terminal on another machine. It uses a key pair. The <strong>private key</strong> stays on your computer. The <strong>public key</strong> is placed on the server, in <code>~/.ssh/authorized_keys</code>. The server checks that you hold the private key without the private key ever leaving your machine.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>File</th><th>Where</th><th>Purpose</th></tr>
+        <tr><td><code>id_ed25519</code></td><td>Your computer, <code>~/.ssh/</code></td><td>Private key. Never share it. Permissions 600.</td></tr>
+        <tr><td><code>id_ed25519.pub</code></td><td>Your computer, <code>~/.ssh/</code></td><td>Public key. Safe to copy to servers.</td></tr>
+        <tr><td><code>authorized_keys</code></td><td>Server, <code>~/.ssh/</code></td><td>Public keys allowed to log in as this user</td></tr>
+        <tr><td><code>known_hosts</code></td><td>Your computer, <code>~/.ssh/</code></td><td>Fingerprints of servers you have already connected to</td></tr>
+      </table>
+    </div>
+    <pre><code>ssh-keygen -t ed25519 -C "you@example.com"   # create a key pair
+ssh-copy-id vboxuser@192.168.0.112           # install the public key on a server
+ssh vboxuser@192.168.0.112                   # log in
+ssh -v vboxuser@192.168.0.112                # verbose output for debugging</code></pre>
+    <h3>Common SSH errors</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Message</th><th>Likely cause</th><th>Fix</th></tr>
+        <tr><td>Permission denied (publickey)</td><td>Your public key isn't in the server's <code>authorized_keys</code>, or file permissions are wrong</td><td>Check the file, then run <code>chmod 700 ~/.ssh</code> and <code>chmod 600 ~/.ssh/authorized_keys</code></td></tr>
+        <tr><td>Connection timed out</td><td>Wrong IP address or a network problem</td><td>Run <code>hostname -I</code> on the server and check both machines are on the same network</td></tr>
+        <tr><td>Connection refused</td><td>The SSH server isn't running</td><td><code>sudo systemctl status ssh</code></td></tr>
+        <tr><td>REMOTE HOST IDENTIFICATION HAS CHANGED</td><td>The server's key changed, or the connection is being intercepted</td><td>If you rebuilt the server, run <code>ssh-keygen -R host</code>. Otherwise investigate before connecting.</td></tr>
+      </table>
+    </div>
+    <div class="callout warn">
+      <span class="label">Security</span>
+      <p>Your private key is the key to the server. Never paste it into a chat, screenshot, or Git repository.</p>
+    </div>
+
+    <h2 id="troubleshoot">8. Troubleshooting checklist</h2>
+    <ol class="steps">
+      <li><strong>Read the full error.</strong> The most useful part is usually the last line.</li>
+      <li><strong>Check where you are.</strong> Run <code>pwd</code>, <code>whoami</code>, and <code>hostname -I</code>.</li>
+      <li><strong>Check permissions.</strong> Run <code>ls -l</code> on the file or folder involved.</li>
+      <li><strong>Check the service.</strong> Run <code>sudo systemctl status ssh</code>.</li>
+      <li><strong>Read the logs.</strong> Run <code>journalctl -u ssh -n 30 --no-pager</code>.</li>
+      <li><strong>Search the exact error text</strong>, or ask an AI tool with the command, the error, and what you already tried.</li>
+    </ol>
+
+    <h2>Practice in your VM</h2>
+    <ol class="steps">
+      <li>Create <code>~/lab/a/b</code> with one command, then delete <code>~/lab</code>.</li>
+      <li>Create a file, set it to <code>600</code>, and explain what <code>ls -l</code> shows.</li>
+      <li>Start <code>sleep 600 &amp;</code>, find its PID with <code>ps aux | grep "[s]leep"</code>, and stop it with <code>kill</code>.</li>
+      <li>Run <code>journalctl -u ssh -n 20</code> and write down what the first line means.</li>
+    </ol>
+  </main>
+
+  <footer>Hello Cloud &middot; <a href="index.html">Home</a> &middot; Contact: <a href="mailto:shlok0419@gmail.com">shlok0419@gmail.com</a></footer>
+</body>
+</html>
