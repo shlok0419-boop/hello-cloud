@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud | Hello Cloud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="index.html">Hello Cloud</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="linux.html">Linux</a></li>
+      <li><a href="networking.html">Networking</a></li>
+      <li><a href="cloud.html">Cloud</a></li>
+      <li><a href="git.html">Git</a></li>
+      <li><a href="devops.html">DevOps</a></li>
+      <li><a href="commands.html">Commands</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-hero">
+    <div class="inner">
+      <p class="eyebrow">Unit 3 and Unit 4</p>
+      <h1>Cloud Computing</h1>
+      <p class="lead">Cloud computing means renting computing resources over the internet, on demand, and paying for what you use. This page covers the essential characteristics, service and deployment models, elasticity, the shared responsibility model, pricing, global infrastructure, and core AWS services.</p>
+      <div class="toc">
+        <a href="#characteristics">Characteristics</a>
+        <a href="#services">Service models</a>
+        <a href="#deployment">Deployment models</a>
+        <a href="#elastic">Elasticity</a>
+        <a href="#responsibility">Shared responsibility</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#infrastructure">Regions and AZs</a>
+        <a href="#mapping">AWS and Azure</a>
+        <a href="#storage">S3 storage classes</a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <h2 id="characteristics">1. Essential characteristics</h2>
+    <p>The US National Institute of Standards and Technology (NIST) defines five characteristics of cloud computing. A service that lacks them is usually just hosting.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Characteristic</th><th>Meaning</th><th>Example</th></tr>
+        <tr><td>On-demand self-service</td><td>You provision resources yourself, without calling the provider</td><td>Launching an EC2 instance from the console</td></tr>
+        <tr><td>Broad network access</td><td>Available over standard networks and devices</td><td>Using a dashboard from a laptop or phone</td></tr>
+        <tr><td>Resource pooling</td><td>The provider serves many customers from shared hardware</td><td>Your VM runs on a physical host shared with others</td></tr>
+        <tr><td>Rapid elasticity</td><td>Capacity grows and shrinks quickly</td><td>Auto Scaling adds servers during a sale</td></tr>
+        <tr><td>Measured service</td><td>Usage is metered and billed</td><td>Billed per hour, or per GB stored</td></tr>
+      </table>
+    </div>
+
+    <h2 id="services">2. Service models: IaaS, PaaS, SaaS</h2>
+    <p>The service model decides how much of the stack you manage. Every layer you hand to the provider reduces your work, and also reduces your control.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Layer</th><th>On-premises</th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr>
+        <tr><td>Application and data</td><td>You</td><td>You</td><td>You</td><td>Provider</td></tr>
+        <tr><td>Runtime and middleware</td><td>You</td><td>You</td><td>Provider</td><td>Provider</td></tr>
+        <tr><td>Operating system</td><td>You</td><td>You</td><td>Provider</td><td>Provider</td></tr>
+        <tr><td>Virtualisation, servers, storage, networking</td><td>You</td><td>Provider</td><td>Provider</td><td>Provider</td></tr>
+      </table>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <span class="badge">IaaS</span>
+        <h3>Infrastructure as a Service</h3>
+        <p>Virtual machines, storage, and networks. You install the OS and the software.</p>
+        <p class="more">Examples: Amazon EC2, Azure Virtual Machines, Google Compute Engine</p>
+      </div>
+      <div class="card">
+        <span class="badge peach">PaaS</span>
+        <h3>Platform as a Service</h3>
+        <p>A ready-made platform for your code. You deploy the application, not the servers.</p>
+        <p class="more">Examples: AWS Elastic Beanstalk, Azure App Service, Google App Engine</p>
+      </div>
+      <div class="card">
+        <span class="badge">SaaS</span>
+        <h3>Software as a Service</h3>
+        <p>Complete applications delivered through a browser. You configure and use them.</p>
+        <p class="more">Examples: Gmail, Google Docs, Microsoft 365, Salesforce</p>
+      </div>
+    </div>
+
+    <h2 id="deployment">3. Deployment models</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Model</th><th>Who owns the infrastructure</th><th>Strengths</th><th>Trade-offs</th></tr>
+        <tr><td>Public</td><td>A cloud provider, shared with many customers</td><td>Low upfront cost, fast to start, pay as you go</td><td>Less direct control. Data location depends on the region you choose.</td></tr>
+        <tr><td>Private</td><td>One organisation, on its own or hosted for it</td><td>Full control and strict compliance</td><td>High cost, and you maintain the hardware</td></tr>
+        <tr><td>Hybrid</td><td>A mix of private and public</td><td>Keep sensitive data local, and burst to the public cloud when needed</td><td>More complex to design and secure</td></tr>
+        <tr><td>Community</td><td>Several organisations with shared needs</td><td>Shared cost and rules, for example for government or research bodies</td><td>Hard to agree on governance</td></tr>
+      </table>
+    </div>
+
+    <h2 id="elastic">4. Elasticity and scalability</h2>
+    <p><strong>Scalability</strong> is the ability to handle more load. <strong>Elasticity</strong> is doing that automatically, adding and removing capacity as demand changes.</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Scale up (vertical)</h3>
+        <p>Make one machine bigger, with more CPU and memory. It's simple, but there is a limit, and it often needs a restart.</p>
+      </div>
+      <div class="card">
+        <h3>Scale out (horizontal)</h3>
+        <p>Add more machines behind a load balancer. It's more complex, but it grows much further, and it survives one machine failing.</p>
+      </div>
+    </div>
+
+    <h2 id="responsibility">5. Shared responsibility model</h2>
+    <p>Security is split between the provider and the customer. The provider secures the cloud itself. You secure what you put in it.</p>
+    <div class="grid-2">
+      <div class="card">
+        <span class="badge">Provider</span>
+        <h3>Security <em>of</em> the cloud</h3>
+        <p>Physical data centres, hardware, power, cooling, the hypervisor, and the global network.</p>
+      </div>
+      <div class="card">
+        <span class="badge peach">Customer</span>
+        <h3>Security <em>in</em> the cloud</h3>
+        <p>Your data, IAM users and permissions, OS patches on EC2, security group rules, and encryption settings.</p>
+      </div>
+    </div>
+    <div class="callout warn">
+      <span class="label">Real-world meaning</span>
+      <p>Many cloud data leaks come from customer configuration, such as a public storage bucket or a leaked access key, rather than from a failure inside the provider's data centre.</p>
+    </div>
+
+    <h2 id="pricing">6. Pricing basics</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Model</th><th>How it works</th><th>Best for</th></tr>
+        <tr><td>On-demand</td><td>Pay per second or hour, with no commitment</td><td>Learning, testing, unpredictable workloads</td></tr>
+        <tr><td>Reserved or Savings Plans</td><td>Commit to 1 or 3 years for a lower rate</td><td>Steady production workloads</td></tr>
+        <tr><td>Spot</td><td>Spare capacity at a large discount, which can be interrupted</td><td>Batch jobs and fault-tolerant work</td></tr>
+        <tr><td>Free Tier</td><td>Limited free usage for new accounts</td><td>Learning, if you stay within the limits</td></tr>
+      </table>
+    </div>
+    <p>Costs come from compute hours, storage, data transfer out of the cloud, and forgotten resources. Set a budget and an alert before you start.</p>
+
+    <h2 id="infrastructure">7. Global infrastructure: Regions and Availability Zones</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Region</h3>
+        <p>A geographic area with several data centres, for example Mumbai (<code>ap-south-1</code>). Choose the region closest to your users, and consider data-residency rules.</p>
+      </div>
+      <div class="card">
+        <h3>Availability Zone (AZ)</h3>
+        <p>One or more separate data centres inside a region, with independent power and networking. Spreading resources across AZs protects you if one site fails. Example: <code>ap-south-1a</code>.</p>
+      </div>
+      <div class="card">
+        <h3>Edge location</h3>
+        <p>Smaller sites close to users, used by content delivery networks such as CloudFront to cache content.</p>
+      </div>
+      <div class="card">
+        <h3>Azure equivalent</h3>
+        <p>Azure also uses Regions and Availability Zones, and it pairs regions so data can be recovered if one fails.</p>
+      </div>
+    </div>
+
+    <h2 id="mapping">8. AWS and Azure service comparison</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Need</th><th>AWS</th><th>Azure</th></tr>
+        <tr><td>Virtual machines</td><td>EC2</td><td>Virtual Machines</td></tr>
+        <tr><td>Object storage</td><td>S3</td><td>Blob Storage</td></tr>
+        <tr><td>Identity and access</td><td>IAM</td><td>Microsoft Entra ID and Azure RBAC</td></tr>
+        <tr><td>Private network</td><td>VPC</td><td>Virtual Network (VNet)</td></tr>
+        <tr><td>Managed database</td><td>RDS</td><td>Azure SQL Database, Azure Database for MySQL</td></tr>
+        <tr><td>Load balancing</td><td>Elastic Load Balancing</td><td>Azure Load Balancer, Application Gateway</td></tr>
+        <tr><td>Automatic scaling</td><td>Auto Scaling</td><td>Virtual Machine Scale Sets</td></tr>
+        <tr><td>Monitoring</td><td>CloudWatch</td><td>Azure Monitor</td></tr>
+        <tr><td>Billing and budgets</td><td>Billing and Cost Management, Budgets</td><td>Cost Management and Billing</td></tr>
+      </table>
+    </div>
+    <p>The names differ, but the ideas match. Once you understand one provider, you can map the others onto it.</p>
+
+    <h2 id="storage">9. S3 storage classes</h2>
+    <p>S3 stores objects (files) in buckets. Each storage class trades cost against how quickly you can get the data back.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Class</th><th>Use it for</th><th>Retrieval</th></tr>
+        <tr><td>S3 Standard</td><td>Frequently accessed data, including websites</td><td>Immediate</td></tr>
+        <tr><td>S3 Intelligent-Tiering</td><td>Data with unknown or changing access patterns</td><td>Immediate. Moves data between tiers automatically.</td></tr>
+        <tr><td>S3 Standard-IA</td><td>Infrequently accessed data that is still needed quickly</td><td>Immediate, with a retrieval fee</td></tr>
+        <tr><td>S3 One Zone-IA</td><td>Infrequent data that can be recreated, stored in one AZ</td><td>Immediate, lower durability</td></tr>
+        <tr><td>S3 Glacier Instant Retrieval</td><td>Archives accessed about once a quarter</td><td>Milliseconds</td></tr>
+        <tr><td>S3 Glacier Flexible Retrieval</td><td>Archives you rarely need</td><td>Minutes to hours</td></tr>
+        <tr><td>S3 Glacier Deep Archive</td><td>Long-term compliance archives</td><td>Hours, lowest cost</td></tr>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="label">Static website note</span>
+      <p>A static website on S3 uses the Standard class. Public access requires turning off Block Public Access and adding a bucket policy.</p>
+    </div>
+
+    <h2>Practice</h2>
+    <ol class="steps">
+      <li>Pick an app you use, such as Gmail or Google Maps. Classify it as IaaS, PaaS, or SaaS, and explain why in two sentences.</li>
+      <li>Explain elasticity to someone who has never used the cloud, using a shop during a festival sale as the example.</li>
+      <li>For a college results portal, choose a deployment model and justify it, including the data and cost trade-offs.</li>
+      <li>List what AWS manages and what you manage for an EC2 web server. Write it in your own words.</li>
+    </ol>
+  </main>
+
+  <footer>Hello Cloud &middot; <a href="index.html">Home</a> &middot; Contact: <a href="mailto:shlok0419@gmail.com">shlok0419@gmail.com</a></footer>
+</body>
+</html>
